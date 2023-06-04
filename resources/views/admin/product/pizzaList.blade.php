@@ -21,12 +21,10 @@
                         <div class="table-data__tool-right">
                             <a href="{{ route('product#createPage') }}">
                                 <button class="au-btn au-btn-icon au-btn--green au-btn--small">
-                                    <i class="zmdi zmdi-plus"></i>add pizza
+                                    <i class="zmdi zmdi-plus"></i>add product
                                 </button>
                             </a>
-                            <button class="au-btn au-btn-icon au-btn--green au-btn--small">
-                                CSV download
-                            </button>
+
                         </div>
                     </div>
 

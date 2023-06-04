@@ -27,7 +27,7 @@
                                     <label for="cc-payment" class="control-label mb-1">Name</label>
                                     <input id="cc-pament" name="categoryName" type="text"
                                         class="form-control @error('categoryName') is-invalid @enderror"
-                                        aria-required="true" aria-invalid="false" placeholder="Seafood..."
+                                        aria-required="true" aria-invalid="false" placeholder="eg. Pizza..."
                                         value="{{ old('categoryName') }}">
                                     @error('categoryName')
                                         <small class="text-danger">{{ $message }}</small>

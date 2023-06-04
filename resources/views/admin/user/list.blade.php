@@ -69,8 +69,8 @@
                                             <td>{{ $user->gender }}</td>
                                             <td>{{ $user->phone }}</td>
                                             <td>{{ $user->address }}</td>
-                                            <td>
-                                                <select class="form-control text-center statusChange">
+                                            <td class="w-100">
+                                                <select class="form-control text-center statusChange p-1 ">
                                                     <option value="user"
                                                         @if ($user->role == 'user') selected @endif>User</option>
                                                     <option value="admin"

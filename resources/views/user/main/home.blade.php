@@ -108,8 +108,10 @@
                                         <div class="product-img position-relative overflow-hidden">
                                             <img class="img-fluid w-100" style="height:200px"
                                                 src="{{ asset('storage/' . $pizza->image) }}" alt="">
+                                            <input type="hidden" value="{{ Auth::user()->id }}" id="userId" />
+                                            <input type="hidden" value="{{ $pizza->id }}" id="pizzaId" />
                                             <div class="product-action">
-                                                <a class="btn btn-outline-dark btn-square" href=""><i
+                                                <a class="btn btn-outline-dark btn-square" href="" id="addCartBtn"><i
                                                         class="fa fa-shopping-cart"></i></a>
                                                 <a class="btn btn-outline-dark btn-square"
                                                     href="{{ route('user#pizzaDetails', $pizza->id) }}"><i
@@ -247,6 +249,27 @@
                 }
             })
 
+            // click add to cart btn
+            $('#addCartBtn').click(function() {
+
+                $source = {
+                    'userId': $('#userId').val(),
+                    'pizzaId': $('#pizzaId').val(),
+                    'count': '1',
+                };
+
+                $.ajax({
+                    method: 'get',
+                    url: 'http://127.0.0.1:8000/user/ajax/addToCart',
+                    data: $source,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status == 'success') {
+                            window.location.href = 'http://127.0.0.1:8000/user/homePage';
+                        }
+                    },
+                });
+            });
 
         });
     </script>

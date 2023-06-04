@@ -41,7 +41,7 @@
         <div class="row px-xl-5">
             <div class="col-lg-3 d-none d-lg-block m-auto">
                 <a href="" class="text-decoration-none">
-                    <span class="h1 text-uppercase text-warning bg-dark px-2">Pizza Shop</span>
+                    <span class="h1 text-uppercase text-warning bg-dark px-2">Multi Shop</span>
 
                 </a>
             </div>

@@ -18,7 +18,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title">
-                                <h3 class="text-center title-2">Create Your Pizza</h3>
+                                <h3 class="text-center title-2">Create Your Product</h3>
                             </div>
                             <hr>
                             <form action="{{ route('product#create') }}" method="post" novalidate="novalidate"
@@ -28,7 +28,7 @@
                                     <label for="cc-payment" class="control-label mb-1">Name</label>
                                     <input id="cc-pament" name="pizzaName" type="text"
                                         class="form-control @error('pizzaName') is-invalid @enderror " aria-required="true"
-                                        aria-invalid="false" placeholder="Enter Your Pizza Name..."
+                                        aria-invalid="false" placeholder="Enter Your Product Name..."
                                         value="{{ old('pizzaName') }}">
                                     @error('pizzaName')
                                         <small class="text-danger">{{ $message }}</small>
@@ -73,7 +73,7 @@
                                     <input id="cc-pament" name="pizzaWaitingTime" type="number"
                                         class="form-control @error('pizzaWaitingTime') is-invalid @enderror"
                                         aria-required="true" aria-invalid="false"
-                                        placeholder="Enter Pizza Waiting Time by minute..."
+                                        placeholder="Enter Product Waiting Time by minute..."
                                         value="{{ old('pizzaWaitingTime') }}">
                                     @error('pizzaWaitingTime')
                                         <small class="text-danger">{{ $message }}</small>
@@ -85,7 +85,7 @@
                                     <label for="cc-payment" class="control-label mb-1">Price</label>
                                     <input id="cc-pament" name="pizzaPrice" type="text"
                                         class="form-control @error('pizzaPrice') is-invalid @enderror" aria-required="true"
-                                        aria-invalid="false" placeholder="Enter Pizza Price..."
+                                        aria-invalid="false" placeholder="Enter Product Price..."
                                         value="{{ old('pizzaPrice') }}">
                                     @error('pizzaPrice')
                                         <small class="text-danger">{{ $message }}</small>

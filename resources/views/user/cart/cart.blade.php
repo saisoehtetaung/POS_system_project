@@ -26,7 +26,7 @@
                                     <input type="hidden" id="userId" value="{{ $cartList->user_id }}" />
                                 </td>
                                 <td class="align-middle" id="pizzaPrice">{{ $cartList->pizza_price }} kyats</td>
-                                <td class="align-middle">
+                                <td class=" align-middle">
                                     <div class="input-group quantity mx-auto" style="width: 100px;">
                                         <div class="input-group-btn">
                                             <button class="btn btn-sm btn-warning btn-minus">
@@ -34,7 +34,7 @@
                                             </button>
                                         </div>
                                         <input type="text" id="qty"
-                                            class="form-control form-control-sm  border-0 text-center"
+                                            class="p-0 form-control form-control-sm  border-0 text-center"
                                             value="{{ $cartList->qty }}">
                                         <div class="input-group-btn">
                                             <button class="btn btn-sm btn-warning btn-plus">
