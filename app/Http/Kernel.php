@@ -43,6 +43,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \App\Http\Middleware\ForceJson::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
@@ -68,5 +69,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin_auth' => AdminAuthMiddleware::class,
         'user_auth' => UserAuthMiddleware::class,
+        'role' => \App\Http\Middleware\EnsureRole::class,
+        'force.json' => \App\Http\Middleware\ForceJson::class,
     ];
 }

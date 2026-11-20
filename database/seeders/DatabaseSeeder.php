@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\User;
+use App\Domain\Identity\Models\Shop;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,14 +14,25 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
-            'name' => 'admin',
-            'email' => 'admin@gmail.com',
-            'phone' => '09751155115',
-            'address' => 'Pyay',
-            'role' => 'admin',
-            'gender' => 'male',
-            'password' => Hash::make('admin123'),
+        $this->call(RoleSeeder::class);
+
+        Shop::query()->firstOrCreate(
+            ['name' => 'Cool Stationary'],
+            [
+                'currency_code' => 'MMK',
+                'tax_rate' => 0,
+                'phone' => '09751155115',
+                'address' => 'Yangon',
+                'receipt_header' => 'Cool Stationary',
+                'receipt_footer' => 'Thank you for shopping with us!',
+            ]
+        );
+
+        $this->call([
+            UnitSeeder::class,
+            LabelTemplateSeeder::class,
+            StationeryDemoSeeder::class,
+            CoolStationaryDummySeeder::class,
         ]);
     }
 }
