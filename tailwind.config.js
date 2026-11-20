@@ -12,7 +12,13 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
+                sans: ['Manrope', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                accent: {
+                    DEFAULT: '#fe9f43',
+                    deep: '#e8872a',
+                },
             },
         },
     },

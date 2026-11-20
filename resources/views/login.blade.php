@@ -10,8 +10,8 @@
         <form action="{{ route('login') }}" method="post">
             @csrf
             <div class="form-group">
-                <label>Email Address</label>
-                <input class="au-input au-input--full" type="email" name="email" placeholder="Email">
+                <label>Login ID</label>
+                <input class="au-input au-input--full" type="text" name="login_id" placeholder="A001 / M001 / S001" value="{{ old('login_id') }}">
             </div>
             <div class="form-group">
                 <label>Password</label>

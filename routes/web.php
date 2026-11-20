@@ -1,164 +1,109 @@
 <?php
 
-use App\Models\Product;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\User\AjaxController;
-use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Cool\BrandController;
+use App\Http\Controllers\Cool\CategoryController;
+use App\Http\Controllers\Cool\CreditController;
+use App\Http\Controllers\Cool\CustomerController;
+use App\Http\Controllers\Cool\DashboardController;
+use App\Http\Controllers\Cool\PosController;
+use App\Http\Controllers\Cool\ProductController;
+use App\Http\Controllers\Cool\PurchaseController;
+use App\Http\Controllers\Cool\SettingsController;
+use App\Http\Controllers\Cool\StockController;
+use App\Http\Controllers\Cool\SupplierController;
+use App\Http\Controllers\Cool\UnitController;
+use App\Http\Controllers\Cool\UserController;
+use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-
-
-
-// login, register
-Route::middleware(['admin_auth'])->group(function(){
-        Route::redirect('/','loginPage');
-        Route::get('loginPage',[AuthController::class,'loginPage'])->name('auth#loginPage');
-        Route::get('registerPage',[AuthController::class,'registerPage'])->name('auth#registerPage');
-        // dd("it is work");
+Route::middleware(['admin_auth'])->group(function () {
+    Route::redirect('/', '/loginPage');
+    Route::get('loginPage', [AuthController::class, 'loginPage'])->name('auth#loginPage');
+    Route::get('registerPage', [AuthController::class, 'registerPage'])->name('auth#registerPage');
 });
-
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
-    //dashboard
-    Route::get('dashboard',[AuthController::class,'dashboard'])->name('dashboard');
-
-    //admin
-    // Route::group(['middleware'=>'admin_auth'],function(){
-
-    // });
-
-    Route::middleware(['admin_auth'])->group(function(){
-
-
-        //category
-        Route::group(['prefix'=>'category'],function(){
-            Route::get('list',[CategoryController::class,'list'])->name('category#list');
-            Route::get('create/page',[CategoryController::class,'createPage'])->name('category#createPage');
-            Route::post('create',[CategoryController::class,'create'])->name('category#create');
-            Route::get('delete/{id}',[CategoryController::class,'delete'])->name('category#delete');
-            Route::get('edit/{id}',[CategoryController::class,'edit'])->name('category#edit');
-            Route::post('update',[CategoryController::class,'update'])->name('category#update');
+    Route::middleware(['role:owner,manager,cashier'])->prefix('cool')->name('cool.')->group(function () {
+        Route::middleware(['role:manager,cashier'])->group(function () {
+            Route::get('pos', [PosController::class, 'index'])->name('pos.index');
+            Route::post('pos/checkout', [PosController::class, 'checkout'])->name('pos.checkout');
+            Route::get('pos/sales/{id}/receipt', [PosController::class, 'receipt'])->name('pos.receipt');
         });
 
-        //admin account
-        Route::prefix('admin')->group(function(){
-            //password
-            Route::get('password/changePage',[AdminController::class,'changePasswordPage'])->name('admin#changePasswordPage');
-            Route::post('change/password',[AdminController::class,'changePassword'])->name('admin#changePassword');
+        Route::get('products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('stock', [StockController::class, 'index'])->name('stock.index');
+        Route::get('stock/low', [StockController::class, 'low'])->name('stock.low');
+        Route::get('stock/expired', [StockController::class, 'expired'])->name('stock.expired');
 
-            //account
-            Route::get('details',[AdminController::class,'details'])->name('admin#details');
-            Route::get('edit',[AdminController::class,'edit'])->name('admin#edit');
-            Route::post('update/{id}',[AdminController::class,'update'])->name('admin#update');
+        Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+        Route::post('customers', [CustomerController::class, 'store'])->name('customers.store');
+        Route::get('customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
+        Route::put('customers/{id}', [CustomerController::class, 'update'])->name('customers.update');
+        Route::delete('customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+        Route::post('customers/{id}/repay', [CustomerController::class, 'repay'])->name('customers.repay');
 
-            //admin list
-            Route::get('list',[AdminController::class,'list'])->name('admin#list');
-            Route::get('delete/{id}',[AdminController::class,'delete'])->name('admin#delete');
-            Route::get('changeRole/{id}',[AdminController::class,'changeRole'])->name('admin#changeRole');
-            Route::post('change/role/{id}',[AdminController::class,'change'])->name('admin#change');
+        Route::prefix('credit')->name('credit.')->group(function () {
+            Route::get('customers', [CreditController::class, 'customers'])->name('customers.index');
+            Route::get('customers/{id}', [CreditController::class, 'showCustomer'])->name('customers.show');
 
+            Route::middleware(['role:owner,manager'])->group(function () {
+                Route::get('suppliers', [CreditController::class, 'suppliers'])->name('suppliers.index');
+                Route::get('suppliers/{id}', [CreditController::class, 'showSupplier'])->name('suppliers.show');
+            });
         });
 
-        //products
-        Route::prefix('products')->group(function(){
-            Route::get('list',[ProductController::class,'list'])->name('product#list');
-            Route::get('create',[ProductController::class,'createPage'])->name('product#createPage');
-            Route::post('create',[ProductController::class,'create'])->name('product#create');
-            Route::get('delete/{id}',[ProductController::class,'delete'])->name('product#delete');
-            Route::get('edit/{id}',[ProductController::class,'edit'])->name('product#edit');
-            Route::get('updatePage/{id}',[ProductController::class,'updatePage'])->name('product#updatePage');
-            Route::post('update',[ProductController::class,'update'])->name('product#update');
-        });
+        Route::middleware(['role:owner,manager'])->group(function () {
+            Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        //orders
-        Route::prefix('order')->group(function(){
-            Route::get('list',[OrderController::class,'orderList'])->name('admin#orderList');
-            Route::get('ajax/status',[OrderController::class,'ajaxStatus'])->name('admin#ajaxStatus');
-            Route::get('ajax/change/status',[OrderController::class,'ajaxChangeStatus'])->name('admin#ajaxChangeStatus');
-            Route::get('listInfo/{orderCode}',[OrderController::class,'listInfo'])->name('admin#listInfo');
-        });
+            Route::get('products/barcode/generate', [ProductController::class, 'generateBarcode'])->name('products.barcode');
+            Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+            Route::post('products', [ProductController::class, 'store'])->name('products.store');
+            Route::get('products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
+            Route::put('products/{id}', [ProductController::class, 'update'])->name('products.update');
+            Route::delete('products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
 
-        //user
-        Route::prefix('user')->group(function(){
-            Route::get('list',[UserController::class,'userList'])->name('admin#userList');
+            Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+            Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
+            Route::put('categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
+            Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
-            Route::get('change/role',[UserController::class,'changeUserRole'])->name('admin#userChangeRole');
-            Route::get('delete/role',[UserController::class,'deleteUserAccount'])->name('admin#deleteUserAccount');
-            Route::get('contactList',[ContactController::class,'showContact'])->name('admin#userShowContact');
-            Route::get('contactInfo/{id}',[ContactController::class,'contactInfo'])->name('admin#userContactInfo');
-            Route::get('deleteContact/{id}',[ContactController::class,'deleteContact'])->name('admin#deleteContact');
-        });
-    });
+            Route::get('brands', [BrandController::class, 'index'])->name('brands.index');
+            Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
+            Route::put('brands/{id}', [BrandController::class, 'update'])->name('brands.update');
+            Route::delete('brands/{id}', [BrandController::class, 'destroy'])->name('brands.destroy');
 
+            Route::get('units', [UnitController::class, 'index'])->name('units.index');
+            Route::post('units', [UnitController::class, 'store'])->name('units.store');
+            Route::put('units/{id}', [UnitController::class, 'update'])->name('units.update');
+            Route::delete('units/{id}', [UnitController::class, 'destroy'])->name('units.destroy');
 
-    //user
-    //home
-    Route::group(['prefix'=>'user','middleware'=>'user_auth'],function(){
-        // Route::get('home',function(){
-        //     return view('user.home');
-        // })->name('user#home');
+            Route::post('stock/adjust', [StockController::class, 'adjust'])->name('stock.adjust');
 
-        Route::get('/homePage',[UserController::class,'home'])->name('user#home');
-        Route::get('filter/{id}',[UserController::class,'filter'])->name('user#filter');
-        Route::get('history',[UserController::class,'history'])->name('user#history');
+            Route::get('purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');
+            Route::get('purchases', [PurchaseController::class, 'index'])->name('purchases.index');
+            Route::post('purchases', [PurchaseController::class, 'store'])->name('purchases.store');
+            Route::get('purchases/{id}/edit', [PurchaseController::class, 'edit'])->name('purchases.edit');
+            Route::get('purchases/{id}', [PurchaseController::class, 'show'])->name('purchases.show');
+            Route::put('purchases/{id}', [PurchaseController::class, 'update'])->name('purchases.update');
+            Route::post('purchases/{id}/receive', [PurchaseController::class, 'receive'])->name('purchases.receive');
+            Route::post('purchases/{id}/cancel', [PurchaseController::class, 'cancel'])->name('purchases.cancel');
 
-        Route::prefix('pizza')->group(function(){
-            Route::get('details/{id}',[UserController::class,'pizzaDetails'])->name('user#pizzaDetails');
-        });
+            Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+            Route::post('suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+            Route::get('suppliers/{id}', [SupplierController::class, 'show'])->name('suppliers.show');
+            Route::put('suppliers/{id}', [SupplierController::class, 'update'])->name('suppliers.update');
+            Route::delete('suppliers/{id}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+            Route::post('suppliers/{id}/pay', [SupplierController::class, 'pay'])->name('suppliers.pay');
 
-        Route::prefix('cart')->group(function(){
-            Route::get('list',[UserController::class,'cartList'])->name('cart#list');
+            Route::get('users', [UserController::class, 'index'])->name('users.index');
+            Route::post('users', [UserController::class, 'store'])->name('users.store');
+            Route::put('users/{id}', [UserController::class, 'update'])->name('users.update');
+            Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 
-        });
-
-
-        Route::prefix('password')->group(function(){
-            Route::get('change',[UserController::class,'changePasswordPage'])->name('user#changePasswordPage');
-            Route::post('change',[UserController::class,'changePassword'])->name('user#changePassword');
-
-        });
-
-        Route::prefix('account')->group(function(){
-            Route::get('change',[UserController::class,'accountChangePage'])->name('user#accountChangePage');
-            Route::post('change/{id}',[UserController::class,'accountChange'])->name('user#accountChange');
-        });
-
-        Route::prefix('ajax')->group(function(){
-           Route::get('pizza/list',[AjaxController::class,'pizzaList'])->name('ajax#pizzaList');
-           Route::get('addToCart',[AjaxController::class,'addToCart'])->name('ajax#addToCart');
-           Route::get('order',[AjaxController::class,'order'])->name('ajax#order');
-           Route::get('clearCart',[AjaxController::class,'clearCart'])->name('ajax#clearCart');
-           Route::get('clear/current/product',[AjaxController::class,'clearProduct'])->name('ajax#clearProduct');
-            Route:: get('increase/viewCount',[AjaxController::class,'increaseViewCount'])->name('ajax#increaseViewCount');
-
-        });
-
-        Route::prefix('contact')->group(function(){
-            Route::post('send',[ContactController::class,'contactSend'])->name('user#contactSend');
+            Route::get('settings', [SettingsController::class, 'edit'])->name('settings.edit');
+            Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
         });
     });
-});
-
-Route::get('webTesting',function(){
-    $data=[
-        'message' => 'this is web testing message',
-    ];
-    return response()->json($data,200);
 });

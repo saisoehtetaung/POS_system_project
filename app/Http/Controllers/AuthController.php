@@ -2,33 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    //direct login page
-    public function loginPage(){
-        return view('login');
+    public function loginPage()
+    {
+        return view('cool.auth.login');
     }
 
-    //direct register page
-    public function registerPage(){
-        return view('register');
+    public function registerPage()
+    {
+        return redirect()->route('auth#loginPage');
     }
 
-
-    //direct dashboard
-    public function dashboard(){
-        if(Auth::user()->role == 'admin'){
-            return redirect()->route('category#list');
+    public function dashboard()
+    {
+        if (! Auth::check()) {
+            return redirect()->route('auth#loginPage');
         }
 
-        return redirect()->route('user#home');
+        if (Auth::user()->hasRole('cashier', 'manager')) {
+            return redirect()->route('cool.pos.index');
+        }
+
+        return redirect()->route('cool.dashboard');
     }
-
-
 }

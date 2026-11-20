@@ -2,8 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Domain\Concerns\HasUlidPrimaryKey;
+use App\Domain\Identity\Models\Role;
+use App\Domain\Identity\Models\Shop;
+use App\Domain\Identity\Models\Terminal;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -15,51 +20,93 @@ class User extends Authenticatable
     use HasApiTokens;
     use HasFactory;
     use HasProfilePhoto;
+    use HasUlidPrimaryKey;
     use Notifiable;
+    use SoftDeletes;
     use TwoFactorAuthenticatable;
 
     /**
-     * The attributes that are mass assignable.
-     *
      * @var string[]
      */
     protected $fillable = [
+        'shop_id',
+        'role_id',
+        'login_id',
         'name',
         'email',
-        'password',
-        'image',
-        'gender',
         'phone',
-        'address',
-        'role',
+        'password',
+        'pin_hash',
+        'is_active',
+        'origin_terminal_id',
+        'last_login_at',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
      * @var array
      */
     protected $hidden = [
+        'password',
+        'pin_hash',
         'remember_token',
         'two_factor_recovery_codes',
         'two_factor_secret',
     ];
 
     /**
-     * The attributes that should be cast.
-     *
      * @var array
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     /**
-     * The accessors to append to the model's array form.
-     *
      * @var array
      */
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function shop(): BelongsTo
+    {
+        return $this->belongsTo(Shop::class);
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function originTerminal(): BelongsTo
+    {
+        return $this->belongsTo(Terminal::class, 'origin_terminal_id');
+    }
+
+    public function canViewCost(): bool
+    {
+        $this->loadMissing('role');
+
+        return (bool) optional($this->role)->can_view_cost;
+    }
+
+    public function hasRole(string ...$names): bool
+    {
+        $this->loadMissing('role');
+
+        return in_array(optional($this->role)->name, $names, true);
+    }
+
+    public function roleName(): ?string
+    {
+        $this->loadMissing('role');
+
+        return optional($this->role)->name;
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->hasRole('owner', 'manager', 'cashier');
+    }
 }
